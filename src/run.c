@@ -55,9 +55,10 @@ GBitmap *splash;
 BitmapLayer *splash_layer;
 GBitmap *flame;
 BitmapLayer *flame_layer;
+static TextLayer *s_output_layer;
 
 // interval to check for next step (in ms)
-const int ACCEL_STEP_MS = 475;
+const int ACCEL_STEP_MS = 1000;
 // value to auto adjust step acceptance 
 const int PED_ADJUST = 2;
 // steps required per calorie
@@ -93,8 +94,11 @@ char *cal = "Regular Sensitivity";
 
 // stores total steps since app install
 static long totalSteps = TSD;
+//Dheera : datalogging
+DataLoggingSessionRef my_data_log;
 
 void start_callback(int index, void *ctx) {
+   APP_LOG(APP_LOG_LEVEL_DEBUG, "In Start_Callback!!");
 	accel_data_service_subscribe(0, NULL);
 
 	menu_items[0].title = "Continue Run";
@@ -108,6 +112,7 @@ void start_callback(int index, void *ctx) {
 
 	window_stack_push(pedometer, true);
 	timer = app_timer_register(ACCEL_STEP_MS, timer_callback, NULL);
+
 }
 
 void info_callback(int index, void *ctx) {
@@ -120,6 +125,7 @@ void info_callback(int index, void *ctx) {
 }
 
 void stepGoal_callback(int index, void *ctx) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In stepGoal_callback!!");
 	set_stepGoal = window_create();
 
 	window_set_window_handlers(set_stepGoal, (WindowHandlers ) { .load =
@@ -215,6 +221,7 @@ void inc_click_handler(ClickRecognizerRef recognizer, void *context) {
 		menu_items[1].subtitle = "Not Set";
 	}
 	layer_mark_dirty(simple_menu_layer_get_layer(pedometer_settings));
+  
 }
 
 void dec_click_handler(ClickRecognizerRef recognizer, void *context) {
@@ -236,7 +243,12 @@ void dec_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 void set_click_handler(ClickRecognizerRef recognizer, void *context) {
+   APP_LOG(APP_LOG_LEVEL_DEBUG, "In set_click_handler !!");
+
 	window_stack_pop(true);
+  
+   APP_LOG(APP_LOG_LEVEL_DEBUG, "After pop in set_click_handler!!");
+   
 }
 
 void goal_set_click_config(void *context) {
@@ -248,9 +260,12 @@ void goal_set_click_config(void *context) {
 			(ClickHandler) inc_click_handler);
 	window_single_click_subscribe(BUTTON_ID_SELECT,
 			(ClickHandler) set_click_handler);
+  
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "In goal_set_click_config!!");
 }
 
 void setup_menu_items() {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In setup_menu_items!!");
 	static char buf[] = "1234567890abcdefg";
 	snprintf(buf, sizeof(buf), "%ld in Total", totalSteps);
 
@@ -285,13 +300,15 @@ void setup_menu_items() {
 }
 
 void setup_menu_sections() {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In setup_menu_sections!!");
 	menu_sections[0] = (SimpleMenuSection ) { .items = menu_items, .num_items =
 					sizeof(menu_items) / sizeof(menu_items[0]) };
 }
 
 void setup_menu_window() {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In setup_menu_window!!");
 	menu_window = window_create();
-
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In setup_menu_window...created menu window");
 	window_set_window_handlers(menu_window, (WindowHandlers ) { .load =
 					settings_load, .unload = settings_unload, });
 }
@@ -364,9 +381,11 @@ void settings_load(Window *window) {
 }
 
 void settings_unload(Window *window) {
-	layer_destroy(window_get_root_layer(menu_window));
-	simple_menu_layer_destroy(pedometer_settings);
-	window_destroy(menu_window);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In settings_unload!!");
+	//layer_destroy(window_get_root_layer(menu_window));
+	//simple_menu_layer_destroy(pedometer_settings);
+  window_stack_pop_all(true);
+	//window_destroy(menu_window);
 }
 
 void ped_load(Window *window) {
@@ -511,6 +530,7 @@ void window_unload(Window *window) {
 	text_layer_destroy(main_message2);
 	text_layer_destroy(hitBack);
 	bitmap_layer_destroy(splash_layer);
+  
 }
 
 void window_mile_load(Window *window) {
@@ -659,11 +679,13 @@ void update_ui_callback() {
   window_stack_push(pedometer_upd, true);
     }
 	}
-
+ 
+  
 	resetUpdate();
 }
 
 static void timer_callback(void *data) {
+   APP_LOG(APP_LOG_LEVEL_DEBUG, "In timer_callback!!");
 	AccelData accel = (AccelData ) { .x = 0, .y = 0, .z = 0 };
 	accel_service_peek(&accel);
 
@@ -684,9 +706,15 @@ static void timer_callback(void *data) {
 
 	layer_mark_dirty(window_get_root_layer(pedometer));
 	timer = app_timer_register(ACCEL_STEP_MS, timer_callback, NULL);
+  data_logging_log(my_data_log, &tempTotal, 1);
+
 }
 
+
+/* Added by dheera : end */
+
 void handle_init(void) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In handle_init!!");
 	tempTotal = totalSteps = persist_exists(TS) ? persist_read_int(TS) : TSD;
 	isDark = persist_exists(SID) ? persist_read_bool(SID) : true;
 
@@ -697,12 +725,13 @@ void handle_init(void) {
 	}
 
 	window = window_create();
-
 	setup_menu_items();
 	setup_menu_sections();
 	setup_menu_window();
-
+  
 	window_stack_push(menu_window, true);
+  my_data_log = data_logging_create(0x1234, DATA_LOGGING_UINT, 4, true);
+  
 }
 
 void handle_deinit(void) {
@@ -711,4 +740,6 @@ void handle_deinit(void) {
 	persist_write_bool(SID, isDark);
 	accel_data_service_unsubscribe();
 	window_destroy(menu_window);
+  // When we don't need to log anything else, we can close off the session.
+  data_logging_finish(my_data_log);
 }
