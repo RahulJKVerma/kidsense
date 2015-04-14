@@ -6,11 +6,19 @@
 #include <pebble.h>
 #include <run.h>
 #include <math.h>
+#include <time.h>
 
 // Total Steps (TS)
 #define TS 1
 // Total Steps Default (TSD)
 #define TSD 1
+//Added for time extraction
+//#define t
+#define PEDOMETER_SESSION 1
+#define TOTAL_STEPS_SESSION 1
+#define DAYVAL '1'
+#define STEP_GOAL 50
+
 
 static Window *window;
 static Window *menu_window;
@@ -23,6 +31,9 @@ static SimpleMenuLayer *pedometer_settings;
 static SimpleMenuItem menu_items[8];
 static SimpleMenuSection menu_sections[1];
 ActionBarLayer *stepGoalSetter;
+
+char str_stepcount[10];
+char str_goal[10];
 
 // Menu Item names and subtitles
 char *item_names[8] = { "Start", "Step Goal", "Overall Steps",
@@ -76,6 +87,10 @@ int YZ_DELTA_MAX = 195;
 int X_DELTA_TEMP, Y_DELTA_TEMP, Z_DELTA_TEMP = 0;
 int lastX, lastY, lastZ, currX, currY, currZ = 0;
 int sensitivity = 1;
+//Added by Rahul
+static time_t t;
+static char currentDay[5];
+static char previousDay[5];
 
 long stepGoal = 0;
 long pedometerCount = 0;
@@ -92,10 +107,15 @@ bool startedSession = false;
 char *theme;
 char *cal = "Regular Sensitivity";
 
+
 // stores total steps since app install
 static long totalSteps = TSD;
 //Dheera : datalogging
 DataLoggingSessionRef my_data_log;
+
+/* Added by Rahul for getting current day - start */
+
+/* Added by Rahul - end */
 
 void start_callback(int index, void *ctx) {
    APP_LOG(APP_LOG_LEVEL_DEBUG, "In Start_Callback!!");
@@ -711,18 +731,49 @@ static void timer_callback(void *data) {
 }
 
 
+ 
 /* Added by dheera : end */
 
 void handle_init(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "In handle_init!!");
 	tempTotal = totalSteps = persist_exists(TS) ? persist_read_int(TS) : TSD;
 	isDark = persist_exists(SID) ? persist_read_bool(SID) : true;
-
+  pedometerCount = persist_exists(PEDOMETER_SESSION) ? persist_read_int(PEDOMETER_SESSION) : 1;
+  if(persist_exists(DAYVAL)) {
+  persist_read_string(DAYVAL, previousDay, sizeof(previousDay));
+  }
+  
 	if (!isDark) {
 		theme = "Current: Light";
 	} else {
 		theme = "Current: Dark";
 	}
+  
+  //Added by Rahul
+  t = time(0);
+  struct tm * now = localtime( & t );
+  //currentDay = now->tm_mday;
+  strftime (currentDay,5,"%j",now);
+  stepGoal = persist_read_int(STEP_GOAL);
+  
+  if (strcmp(currentDay,previousDay) != 0) {
+  pedometerCount = 0;
+	}
+  
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Pedometer count loaded is %ld", pedometerCount);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Pedometer count loaded is %ld", totalSteps);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Current day buffer is %s ", currentDay);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "DAYVAL is %s", previousDay);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Stepgoal is %ld", stepGoal);
+
+  
+  // End
+  //str_stepcount[10];
+  //str_goal[10];
+  snprintf(str_stepcount, sizeof(str_stepcount), "%lu", pedometerCount);
+  snprintf(str_goal, sizeof(str_goal), "%lu", stepGoal);
+  item_sub[0] = str_stepcount;
+  item_sub[1] = str_goal;
 
 	window = window_create();
 	setup_menu_items();
@@ -737,8 +788,14 @@ void handle_init(void) {
 void handle_deinit(void) {
 	totalSteps += pedometerCount;
 	persist_write_int(TS, totalSteps);
-	persist_write_bool(SID, isDark);
-	accel_data_service_unsubscribe();
+  persist_write_bool(SID, isDark);
+  persist_write_int(STEP_GOAL, stepGoal);
+  persist_write_int(PEDOMETER_SESSION, pedometerCount);
+  persist_write_string(DAYVAL, currentDay);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "totalSteps after leaving is %ld", totalSteps);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Pedometercount after leaving is %ld", pedometerCount);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "cuurentDay after leaving is %s", currentDay);
+  accel_data_service_unsubscribe();
 	window_destroy(menu_window);
   // When we don't need to log anything else, we can close off the session.
   data_logging_finish(my_data_log);
