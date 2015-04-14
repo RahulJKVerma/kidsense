@@ -690,7 +690,7 @@ void update_ui_callback() {
 			window_set_window_handlers(window, (WindowHandlers ) { .load =
 							window_load, .unload = window_unload, });
 			window_stack_push(window, true);
-		} else if (stepGoal > 0 && pedometerCount < stepGoal && pedometerCount%40 == 0) {
+		} else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount)) {
       vibes_long_pulse();
 			pedometer_upd = window_create();
 
