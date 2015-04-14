@@ -51,7 +51,7 @@
     </RelativeLayout>
 
     <!-- Side navigation drawer UI -->
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tashan="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,7 +80,15 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#58585b" />
 
-    </LinearLayout>
+    </LinearLayout>-->
+    <!-- Side navigation drawer UI -->
+    <ListView
+        android:id="@+id/navList"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|start"
+        android:background="#ffeeeeee"/>
+
 
 </android.support.v4.widget.DrawerLayout>
 
