@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:gravity="center"
-android:background="#E0EEEE"
+android:background="@drawable/rowshadow"
 android:id="@+id/leaderboardid">
 <TextView
     android:layout_width="wrap_content"
@@ -15,4 +15,12 @@ android:id="@+id/leaderboardid">
     android:padding="15dp"
     android:background="@drawable/layer_card_background"
     android:text="Hello Card!\nThis is an example of a card..."/>
-</LinearLayout>
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/pet1"
+        android:background="@drawable/pet1"
+        android:layout_below="@+id/video"
+        android:layout_alignParentLeft="true"
+        />
+</RelativeLayout>
