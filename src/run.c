@@ -91,6 +91,7 @@ int sensitivity = 1;
 static time_t t;
 static char currentDay[5];
 static char previousDay[5];
+int hours_lapsed;
 
 long stepGoal = 0;
 long pedometerCount = 0;
@@ -593,7 +594,55 @@ void window_mile_load(Window *window) {
 	text_layer_set_text(hitBack, "\n\n\n\n\n\n     << Press Back");
 }
 
+void window_mile2_load(Window *window) {
+
+	splash = gbitmap_create_with_resource(RESOURCE_ID_UNSURE_FACE);
+	window_set_background_color(window, GColorBlack);
+
+	splash_layer = bitmap_layer_create(GRect(0, 0, 145, 185));
+	bitmap_layer_set_bitmap(splash_layer, splash);
+	layer_add_child(window_get_root_layer(window),
+			bitmap_layer_get_layer(splash_layer));
+
+	main_message = text_layer_create(GRect(0, 0, 150, 170));
+	main_message2 = text_layer_create(GRect(3, 30, 150, 170));
+	hitBack = text_layer_create(GRect(3, 40, 200, 170));
+
+	text_layer_set_background_color(main_message, GColorClear);
+	text_layer_set_text_color(main_message, GColorWhite);
+	text_layer_set_font(main_message,
+			fonts_load_custom_font(
+					resource_get_handle(RESOURCE_ID_ROBOTO_LT_25)));
+	layer_add_child(window_get_root_layer(window), (Layer*) main_message);
+
+	text_layer_set_background_color(main_message2, GColorClear);
+	text_layer_set_text_color(main_message2, GColorWhite);
+	text_layer_set_font(main_message2,
+			fonts_load_custom_font(
+					resource_get_handle(RESOURCE_ID_ROBOTO_LT_15)));
+	layer_add_child(window_get_root_layer(window), (Layer*) main_message2);
+
+	text_layer_set_background_color(hitBack, GColorClear);
+	text_layer_set_text_color(hitBack, GColorWhite);
+	text_layer_set_font(hitBack,
+			fonts_load_custom_font(
+					resource_get_handle(RESOURCE_ID_ROBOTO_LT_15)));
+	layer_add_child(window_get_root_layer(window), (Layer*) hitBack);
+
+	text_layer_set_text(main_message, "Can do Better!");
+	text_layer_set_text(main_message2, "        ");
+	text_layer_set_text(hitBack, "\n\n\n\n\n\n     << Press Back");
+}
+
 void window_mile_unload(Window *window) {
+	window_destroy(window);
+	text_layer_destroy(main_message);
+	text_layer_destroy(main_message2);
+	text_layer_destroy(hitBack);
+	bitmap_layer_destroy(splash_layer);
+}
+
+void window_mile2_unload(Window *window) {
 	window_destroy(window);
 	text_layer_destroy(main_message);
 	text_layer_destroy(main_message2);
@@ -690,12 +739,21 @@ void update_ui_callback() {
 			window_set_window_handlers(window, (WindowHandlers ) { .load =
 							window_load, .unload = window_unload, });
 			window_stack_push(window, true);
-		} else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount)) {
+		} else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && (pedometerCount/hours_lapsed >= stepGoal/10)) {
       vibes_long_pulse();
 			pedometer_upd = window_create();
 
 	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile_load,
 					.unload = window_mile_unload, });
+  window_stack_push(pedometer_upd, true);
+    }
+    
+    else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && (pedometerCount/hours_lapsed < stepGoal/10)) {
+      vibes_long_pulse();
+			pedometer_upd = window_create();
+
+	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile2_load,
+					.unload = window_mile2_unload, });
   window_stack_push(pedometer_upd, true);
     }
 	}
@@ -754,8 +812,8 @@ void handle_init(void) {
   struct tm * now = localtime( & t );
   //currentDay = now->tm_mday;
   strftime (currentDay,5,"%j",now);
+  hours_lapsed = now->tm_hour;
   stepGoal = persist_read_int(STEP_GOAL);
-  
   if (strcmp(currentDay,previousDay) != 0) {
   pedometerCount = 0;
 	}

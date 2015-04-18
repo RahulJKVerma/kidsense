@@ -9,6 +9,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/unsure-smiley-face.png",
+                "name": "UNSURE_FACE",
+                "type": "png"
+            },
+            {
                 "file": "images/Smiley.png",
                 "name": "EMOTICON",
                 "type": "png"
