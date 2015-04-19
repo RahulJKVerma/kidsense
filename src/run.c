@@ -4,6 +4,7 @@
  */
 
 #include <pebble.h>
+#include <stdlib.h> 
 #include <run.h>
 #include <math.h>
 #include <time.h>
@@ -14,10 +15,11 @@
 #define TSD 1
 //Added for time extraction
 //#define t
-#define PEDOMETER_SESSION 1
-#define TOTAL_STEPS_SESSION 1
-#define DAYVAL '1'
-#define STEP_GOAL 50
+#define PEDOMETER_SESSION 2
+#define TOTAL_STEPS_SESSION 3
+#define DAYVAL 4
+#define STEP_GOAL 5
+#define STARTHOUR 6
 
 
 static Window *window;
@@ -91,7 +93,10 @@ int sensitivity = 1;
 static time_t t;
 static char currentDay[5];
 static char previousDay[5];
-int hours_lapsed;
+static char currentHour[5];
+static char previousStartHour[5];
+static int currentHourInt;
+static int previousStartHourInt;
 
 long stepGoal = 0;
 long pedometerCount = 0;
@@ -556,7 +561,7 @@ void window_unload(Window *window) {
 
 void window_mile_load(Window *window) {
 
-	splash = gbitmap_create_with_resource(RESOURCE_ID_EMOTICON);
+	splash = gbitmap_create_with_resource(RESOURCE_ID_THUMBS_UP);
 	window_set_background_color(window, GColorBlack);
 
 	splash_layer = bitmap_layer_create(GRect(0, 0, 145, 185));
@@ -596,7 +601,7 @@ void window_mile_load(Window *window) {
 
 void window_mile2_load(Window *window) {
 
-	splash = gbitmap_create_with_resource(RESOURCE_ID_UNSURE_FACE);
+	splash = gbitmap_create_with_resource(RESOURCE_ID_PEBBLE_COIN);
 	window_set_background_color(window, GColorBlack);
 
 	splash_layer = bitmap_layer_create(GRect(0, 0, 145, 185));
@@ -739,8 +744,10 @@ void update_ui_callback() {
 			window_set_window_handlers(window, (WindowHandlers ) { .load =
 							window_load, .unload = window_unload, });
 			window_stack_push(window, true);
-		} else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && (pedometerCount/hours_lapsed >= stepGoal/10)) {
+		} else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && (( ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))) >= stepGoal/10) || currentHourInt == previousStartHourInt)) {
       vibes_long_pulse();
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "In good performance, calculated average %f", ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))));
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "In good performance, target average %ld", stepGoal/10);
 			pedometer_upd = window_create();
 
 	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile_load,
@@ -748,8 +755,10 @@ void update_ui_callback() {
   window_stack_push(pedometer_upd, true);
     }
     
-    else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && (pedometerCount/hours_lapsed < stepGoal/10)) {
+    else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && ( ceil(pedometerCount/(currentHourInt - (previousStartHourInt))) < stepGoal/10)) {
       vibes_long_pulse();
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "In bad performance %f, calculated average", ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))));
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "In bad performance, target average %ld", stepGoal/10);
 			pedometer_upd = window_create();
 
 	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile2_load,
@@ -797,6 +806,11 @@ void handle_init(void) {
 	tempTotal = totalSteps = persist_exists(TS) ? persist_read_int(TS) : TSD;
 	isDark = persist_exists(SID) ? persist_read_bool(SID) : true;
   pedometerCount = persist_exists(PEDOMETER_SESSION) ? persist_read_int(PEDOMETER_SESSION) : 1;
+  
+  if(persist_exists(STARTHOUR)) { 
+    persist_read_string(STARTHOUR, previousStartHour, sizeof(previousStartHour));
+     }
+  
   if(persist_exists(DAYVAL)) {
   persist_read_string(DAYVAL, previousDay, sizeof(previousDay));
   }
@@ -812,10 +826,12 @@ void handle_init(void) {
   struct tm * now = localtime( & t );
   //currentDay = now->tm_mday;
   strftime (currentDay,5,"%j",now);
-  hours_lapsed = now->tm_hour;
+  strftime (currentHour,5,"%H",now);
+  // = now->tm_hour;
   stepGoal = persist_read_int(STEP_GOAL);
-  if (strcmp(currentDay,previousDay) != 0) {
+  if (strcmp(currentDay, previousDay) != 0) {
   pedometerCount = 0;
+  snprintf(previousStartHour, sizeof(previousStartHour), "%s", currentHour);
 	}
   
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Pedometer count loaded is %ld", pedometerCount);
@@ -823,11 +839,20 @@ void handle_init(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Current day buffer is %s ", currentDay);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "DAYVAL is %s", previousDay);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Stepgoal is %ld", stepGoal);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "currentHour is %s", currentHour);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "PrevStarthour is %s", previousStartHour);
 
   
   // End
   //str_stepcount[10];
   //str_goal[10];
+  //char * pEnd;
+  //snprintf(currentHourInt, sizeof(currentHourInt), "%d", currentHour);
+  //currentHourInt = strtol (currentHour,&pEnd,10);
+  //snprintf(previousStartHourInt, sizeof(previousStartHourInt), "%d", previousStartHour);
+  //previousStartHourInt = strtol (previousStartHour,&pEnd,10);
+  currentHourInt = atoi (currentHour);
+  previousStartHourInt = atoi (previousStartHour);
   snprintf(str_stepcount, sizeof(str_stepcount), "%lu", pedometerCount);
   snprintf(str_goal, sizeof(str_goal), "%lu", stepGoal);
   item_sub[0] = str_stepcount;
@@ -850,9 +875,11 @@ void handle_deinit(void) {
   persist_write_int(STEP_GOAL, stepGoal);
   persist_write_int(PEDOMETER_SESSION, pedometerCount);
   persist_write_string(DAYVAL, currentDay);
+  persist_write_string(STARTHOUR, previousStartHour);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "totalSteps after leaving is %ld", totalSteps);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Pedometercount after leaving is %ld", pedometerCount);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "cuurentDay after leaving is %s", currentDay);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "start hour after leaving is %s", currentHour);
   accel_data_service_unsubscribe();
 	window_destroy(menu_window);
   // When we don't need to log anything else, we can close off the session.

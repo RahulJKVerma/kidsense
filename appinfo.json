@@ -9,8 +9,13 @@
     "resources": {
         "media": [
             {
-                "file": "images/unsure-smiley-face.png",
-                "name": "UNSURE_FACE",
+                "file": "images/pebble-coin.png",
+                "name": "PEBBLE_COIN",
+                "type": "png"
+            },
+            {
+                "file": "images/pebble-thumbsup.png",
+                "name": "THUMBS_UP",
                 "type": "png"
             },
             {
