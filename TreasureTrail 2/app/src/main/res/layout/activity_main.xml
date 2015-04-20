@@ -32,37 +32,18 @@
         android:id = "@+id/container" >
 
 
-        <ImageView
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@android:id/text1"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:id="@+id/bg"
-            android:background="@drawable/bg" />
-        <ImageView
-            android:layout_width="1000dp"
-            android:layout_height="48dp"
-            android:id="@+id/video"
-            android:background="@drawable/video"
-            android:layout_below="@+id/bg"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:id="@+id/pet1"
-            android:background="@drawable/pet1"
-            android:layout_below="@+id/video"
-            android:layout_alignParentLeft="true"
-            />
-
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:id="@+id/pet2"
-            android:background="@drawable/pet2"
-            android:layout_below="@+id/pet1"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/list_selector_background"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:textSize="16sp"
+            android:textColor="#111" />
 
 
     </RelativeLayout>

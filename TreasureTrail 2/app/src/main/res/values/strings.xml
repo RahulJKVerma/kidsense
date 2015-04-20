@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">TreasureTrail</string>
+    <string name="title_section0">Home</string>
     <string name="title_section1">LeaderBoard</string>
     <string name="title_section2">Profile</string>
     <string name="title_section3">Section 3</string>

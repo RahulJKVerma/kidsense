@@ -52,9 +52,10 @@ public class MainActivity extends ActionBarActivity{
         mTitle = getTitle();
 
         // Add nav items
-        dlDrawer.addNavItem("Leaderboard", 1, "Leaderboard", FirstFragment.class);
-        dlDrawer.addNavItem("Profile", 2,"Profile", SecondFragment.class);
-        dlDrawer.addNavItem("Activity", 3,"Activity", ThirdFragment.class);
+        dlDrawer.addNavItem("Home", 1, "Home", FirstFragment.class);
+        dlDrawer.addNavItem("Leaderboard", 2, "Leaderboard", SecondFragment.class);
+        dlDrawer.addNavItem("Profile", 3,"Profile", ThirdFragment.class);
+        dlDrawer.addNavItem("Activity", 4,"Activity", ThirdFragment.class);
         // Select default
         if (savedInstanceState == null) {
             dlDrawer.selectDrawerItem(0);
@@ -122,19 +123,18 @@ public class MainActivity extends ActionBarActivity{
 
 
         switch (number) {
-            default:
-                fragment = new PlusOneFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
-                break;
             case 1:
-                mTitle = getString(R.string.title_section1);
-                fragment = new PlusOneFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+               // fragment = new PlusOneFragment();
+               // fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+                mTitle = getString(R.string.title_section0);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.title_section1);
                 break;
             case 3:
+                mTitle = getString(R.string.title_section2);
+                break;
+            case 4:
                 mTitle = getString(R.string.title_section3);
                 break;
 

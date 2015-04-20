@@ -1,81 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent"  >
 
-     <ImageView
-        android:id="@+id/idprofile"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:contentDescription="@string/profile"
-        android:orientation="horizontal"
-        android:src="@drawable/a2" />
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-
-
-
-</LinearLayout>-->
-
-
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#F0F0F5" >
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/background_view_rounded_single"
-        android:orientation="vertical"
-        android:visibility="visible"
-        android:id="@+id/linearLayout">
-
-
-
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Custom Seekbar"
-        android:textColor="#fcfcfc"
-        android:textSize="20sp" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/background_view_rounded_single"
-        android:orientation="vertical"
-        android:visibility="visible"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignLeft="@+id/linearLayout"
-        android:layout_alignStart="@+id/linearLayout"
-        android:layout_marginTop="120dp">
-
-
-
-
-
-        <TextView
-            android:layout_width="wrap_content"
+            <Button android:text="Daily"
+                android:id="@+id/Button01"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+            </Button>
+            <Button android:text="Week"
+                android:id="@+id/Button02"
+                android:layout_toRightOf="@+id/Button01"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center_horizontal">
+            </Button>
+        </LinearLayout>
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Custom Seekbar"
-            android:textColor="#fcfcfc"
-            android:textSize="20sp" />
+            android:gravity="center"
+            android:background="@drawable/rowshadow"
+            android:id="@+id/leaderboardid">
 
-        <SeekBar
-            android:id="@+id/volume_bar"
-            android:layout_width="fill_parent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="15dp"
+                android:background="@drawable/layer_card_background"
+                android:text="Mom Anne\n4534 steps"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/pet1"
+                android:layout_toEndOf="@+id/pet1" />
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:id="@+id/pet1"
+                android:background="@drawable/pet1"
+                android:layout_below="@+id/video"
+                android:layout_alignParentLeft="true"
+                />
+        </RelativeLayout>
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:max="100"
-            android:progress="0"
-            android:progressDrawable="@drawable/progressbar"
-            android:secondaryProgress="0" />
+            android:gravity="center"
+            android:background="@drawable/rowshadow"
+            android:id="@+id/leaderboardid2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="15dp"
+                android:background="@drawable/layer_card_background"
+                android:text="Piggy Peter\n3000 steps"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/pet2"
+                android:layout_toEndOf="@+id/pet2" />
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:id="@+id/pet2"
+                android:background="@drawable/pet2"
+                android:layout_below="@+id/video"
+                android:layout_alignParentLeft="true"
+                />
+        </RelativeLayout>
     </LinearLayout>
+
+
 
 </RelativeLayout>
