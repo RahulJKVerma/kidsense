@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
 import android.content.res.Configuration;
 import android.view.MenuInflater;
+import android.widget.Toast;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
@@ -46,7 +47,7 @@ public class MainActivity extends ActionBarActivity{
         setSupportActionBar(toolbar);
 
 
-        dlDrawer = (FragmentNavigationDrawer)  findViewById(R.id.drawer_layout);;
+        dlDrawer = (FragmentNavigationDrawer)  findViewById(R.id.drawer_layout);
         dlDrawer.setupDrawerConfiguration((ListView) findViewById(R.id.lvDrawer), toolbar,
                 R.layout.drawer_nav_item, R.id.flContent);
         mTitle = getTitle();
@@ -60,6 +61,14 @@ public class MainActivity extends ActionBarActivity{
         if (savedInstanceState == null) {
             dlDrawer.selectDrawerItem(0);
         }
+
+       //Ruchita - Make toast
+       // Toast.makeText(MainActivity.this, "Syncing data from your Pebble watch.", 5000).show();
+        Toast myToast = new Toast(getApplicationContext());
+        myToast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        myToast.setDuration(Toast.LENGTH_LONG);
+       // myToast.setView(myLayout);
+        myToast.show();
     }
 
     @Override
