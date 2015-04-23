@@ -13,13 +13,13 @@
             android:layout_height="match_parent">
 
             <Button android:text="Daily"
-                android:id="@+id/Button01"
+                android:id="@+id/dailyBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
             </Button>
             <Button android:text="Week"
-                android:id="@+id/Button02"
+                android:id="@+id/weeklyBtn"
                 android:layout_toRightOf="@+id/Button01"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

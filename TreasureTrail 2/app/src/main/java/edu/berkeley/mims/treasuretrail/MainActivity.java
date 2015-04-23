@@ -20,6 +20,8 @@ import android.widget.ListView;
 import android.content.res.Configuration;
 import android.view.MenuInflater;
 import android.widget.Toast;
+import android.widget.Button;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
@@ -249,7 +251,28 @@ public class MainActivity extends ActionBarActivity{
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.profilefragment, container, false);
+            View rootView = inflater.inflate(R.layout.leaderboardlayout, container, false);
+            Button dailyBtn = (Button)rootView.findViewById(R.id.dailyBtn);
+            dailyBtn.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v)
+                {
+                    Toast.makeText(getActivity(), "Daily Button Clicked", Toast.LENGTH_LONG).show();
+                }
+            });
+
+            //Weekly button
+            Button weeklyBtn = (Button)rootView.findViewById(R.id.weeklyBtn);
+            weeklyBtn.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v)
+                {
+                    Toast.makeText(getActivity(), "Weekly Button Clicked", Toast.LENGTH_LONG).show();
+                }
+            });
+
 
             return rootView;
 
