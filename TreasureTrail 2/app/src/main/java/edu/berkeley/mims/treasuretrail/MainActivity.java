@@ -175,7 +175,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     //Added by Dheera for phone's accelerometer part and datalogging from pebble
     private void updateUi() {
         System.out.print("Inside updateUi()");
-        Toast.makeText(MainActivity.this, "Syncing data from your Pebble watch.", Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "TreasureTrail - Data sync in progress.", Toast.LENGTH_LONG).show();
 
         TextView textView = (TextView) findViewById(R.id.log_data_text_view);
         //textView.setTextColor(Color.GREEN);
