@@ -1,6 +1,14 @@
 package edu.berkeley.mims.treasuretrail;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -8,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,14 +28,18 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
 import android.content.res.Configuration;
 import android.view.MenuInflater;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import com.getpebble.android.kit.PebbleKit;
+import java.util.Calendar;
+import java.util.UUID;
 
 
-public class MainActivity extends ActionBarActivity{
+public class MainActivity extends ActionBarActivity implements SensorEventListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -39,10 +52,27 @@ public class MainActivity extends ActionBarActivity{
      */
     private CharSequence mTitle;
 
+    //START : ADDED BY DHEERA FOR DATALOGGING, PHONE ACCELEROMETER AND ANIMATION CHANGES
+    private static final UUID KIDSENSE_APP_UUID = UUID.fromString("07d87811-510f-48f2-b723-6bcfc4db9a40");
+    static int childstepcount = 0;
+    static int totalsteps = 0;
+    static int todayssteps = 0;
+    private TextView textView;
+    private SensorManager mSensorManager;
+    private Sensor mStepCounterSensor;
+    private Sensor mStepDetectorSensor;
+    int notificationCount;
+    private PebbleKit.PebbleDataLogReceiver mDataLogReceiver = null;
+    //END : ADDED BY DHEERA FOR DATALOGGING, PHONE ACCELEROMETER AND ANIMATION CHANGES
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MainActivity.todayssteps=0;
 
         // Set a Toolbar to replace the ActionBar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,8 +94,147 @@ public class MainActivity extends ActionBarActivity{
             dlDrawer.selectDrawerItem(0);
         }
 
+
+        //START : ADDED BY DHEERA FOR DATALOGGING, PHONE ACCELEROMETER AND ANIMATION CHANGES
+        //FOR PHONE"S ACCELEROMETER PART
+        Log.i("DHEERA-", "Inside onCreate()...todayssteps=" + todayssteps);
+        textView = (TextView) findViewById(R.id.count);
+        mSensorManager = (SensorManager)
+                getSystemService(Context.SENSOR_SERVICE);
+        //mStepCounterSensor = mSensorManager .getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
+        //The following code is for resetting stepcount at 12am everyday
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 0 ); //0
+        calendar.set(Calendar.MINUTE, 1);//1
+        notificationCount = notificationCount + 1;
+        AlarmManager mgr = (AlarmManager) getApplicationContext().
+                getSystemService(Context.ALARM_SERVICE);
+        Intent notificationIntent = new Intent(getApplicationContext(),
+                ReminderAlarm.class);
+
+        notificationIntent.putExtra("NotifyCount", notificationCount);
+        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(),
+                notificationCount, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        mgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
+
+        //END : ADDED BY DHEERA FOR DATALOGGING, PHONE ACCELEROMETER AND ANIMATION CHANGES
+
+
         //Syncs data from Pebble Watch
-        Toast.makeText(MainActivity.this, "Syncing data from your Pebble watch.", 1000000).show();
+
+    }
+
+    //onResume() method Added by Dheera for phone's accelerometer data and dataloggin from pebble
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final Handler handler = new Handler();
+        Log.i("DHEERA-","Inside onResume()");
+        System.out.println("Inside onResume()");
+        // To receive data logs, Android applications must register a "DataLogReceiver" to receive data.
+        //
+        // In this example, we're implementing a handler to receive unsigned integer data that was logged by a
+        // corresponding watch-app. In the watch-app, three separate logs were created, one per animal. Each log was
+        // tagged with a key indicating the animal to which the data corresponds. So, the tag will be used here to
+        // look up the animal name when data is received.
+        //
+        // The data being received contains the seconds since the epoch (a timestamp) of when an ocean faring animal
+        // was sighted. The "timestamp" indicates when the log was first created, and will not be used in this example.
+        mDataLogReceiver = new PebbleKit.PebbleDataLogReceiver(KIDSENSE_APP_UUID) {
+            @Override
+            public void receiveData(android.content.Context context, java.util.UUID logUuid, java.lang.Long timestamp, java.lang.Long tag, java.lang.Long data) {
+                Log.i("DHEERA", "Inside receiveData()");
+                // mDisplayText.append("\n");
+
+                //mDisplayText.append("Footstep ");
+                //mDisplayText.append(data);
+
+                childstepcount=data.intValue();
+                Log.i("DHEERA","step count="+data.intValue());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUi();
+                    }
+                });
+            }
+        };
+
+        PebbleKit.registerDataLogReceiver(this, mDataLogReceiver);
+        PebbleKit.requestDataLogsForApp(this, KIDSENSE_APP_UUID);
+        //FOR PHONE"S ACCELEROMETER PART
+        //mSensorManager.registerListener(this, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        mSensorManager.registerListener(this, mStepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
+    //Added by Dheera for phone's accelerometer part and datalogging from pebble
+    private void updateUi() {
+        System.out.print("Inside updateUi()");
+        Toast.makeText(MainActivity.this, "Syncing data from your Pebble watch.", Toast.LENGTH_LONG).show();
+
+        TextView textView = (TextView) findViewById(R.id.log_data_text_view);
+        //textView.setTextColor(Color.GREEN);
+        //textView.setText(mDisplayText.toString());
+        textView.setText("Pebble steps- "+Integer.toString(childstepcount));
+    }
+
+    //Added by Dheera for phone's accelerometer part and datalogging from pebble
+
+    //ADDED FOR PHONE"S ACCELEROMETER PART
+    public void onSensorChanged(SensorEvent event) {
+        Log.i("DHEERA","Inside onSensorChanged()");
+
+        Sensor sensor = event.sensor;
+        float[] values = event.values;
+        int value = -1;
+
+        if (values.length > 0) {
+            value = (int) values[0];
+        }
+
+        if (sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            todayssteps=todayssteps+value;
+
+            System.out.println("Phone steps-"+todayssteps+" ");
+            textView.setText("Phone steps-" + todayssteps);
+        } else if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            todayssteps=todayssteps+value;
+
+            Log.i("DHEERA-", "Inside onSensorChanged() ..totalsteps= "+totalsteps);
+
+            textView.setText("Phone steps " + todayssteps+" ");
+        }
+    }
+
+    //Added by Dheera for phone's accelerometer part and datalogging from pebble
+    //ADDED FOR PHONE"S ACCELEROMETER PART
+    protected void onStop() {
+        Log.i("DHEERA", "Inside onStop()");
+        super.onStop();
+        //mSensorManager.unregisterListener(this, mStepCounterSensor);
+        mSensorManager.unregisterListener(this, mStepDetectorSensor);
+    }
+
+    //Added by Dheera for phone's accelerometer part and datalogging from pebble
+    //Need to override this method for the implementing SensorEventListener
+    public void onAccuracyChanged(Sensor sensor, int accuracy){
+
+    }
+    //Added by Dheera for phone's accelerometer part and datalogging from pebble
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mDataLogReceiver != null) {
+            unregisterReceiver(mDataLogReceiver);
+            mDataLogReceiver = null;
+        }
+
+        Log.i("DHEERA","Inside onPause()");
 
     }
 
