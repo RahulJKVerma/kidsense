@@ -20,6 +20,7 @@
 #define DAYVAL 4
 #define STEP_GOAL 5
 #define STARTHOUR 6
+#define COIN_COUNT 0
 
 
 static Window *window;
@@ -36,12 +37,13 @@ ActionBarLayer *stepGoalSetter;
 
 char str_stepcount[10];
 char str_goal[10];
+char str_coin[10];
 
 // Menu Item names and subtitles
 char *item_names[8] = { "Start", "Step Goal", "Overall Steps",
-		"Overall Calories", "Sensitivity", "Theme", "Version", "About" };
+		"Overall Calories", "Sensitivity", "Theme", "Coins Collected", "About" };
 char *item_sub[8] = { "Lets Exercise!", "Not Set", "0 in Total", "0 Burned",
-		"", "", "v1.5-RELEASE", "Jathusan T." };
+		"", "", "coin$", "Treasure Trail" };
 
 // Timer used to determine next step check
 static AppTimer *timer;
@@ -102,6 +104,7 @@ long stepGoal = 0;
 long pedometerCount = 0;
 long caloriesBurned = 0;
 long tempTotal = 0;
+long coins = 0;
 
 bool did_pebble_vibrate = false;
 bool validX, validY, validZ = false;
@@ -298,6 +301,9 @@ void setup_menu_items() {
 	static char buf2[] = "1234567890abcdefg";
 	snprintf(buf2, sizeof(buf2), "%ld Burned",
 			(long) (totalSteps / STEPS_PER_CALORIE));
+  
+	static char coin_cnt[] = "1234567890abcdefg";
+	snprintf(coin_cnt, sizeof(coin_cnt), "%ld", coins);
 
 	for (int i = 0; i < (int) (sizeof(item_names) / sizeof(item_names[0]));
 			i++) {
@@ -319,7 +325,15 @@ void setup_menu_items() {
 		} else if (i == 5) {
 			menu_items[i].subtitle = theme;
 			menu_items[i].callback = theme_callback;
-		} else if (i == 6 || i == 7) {
+		} 
+     // else if (i == 6 || i == 7) {
+		//	menu_items[i].callback = info_callback;
+		//}
+      
+    else if (i == 6 ) {
+			menu_items[i].subtitle = coin_cnt;
+		}
+    else if (i == 7) {
 			menu_items[i].callback = info_callback;
 		}
 	}
@@ -502,7 +516,7 @@ void info_load(Window *window) {
 	layer_add_child(window_get_root_layer(dev_info), (Layer*) infor);
 	text_layer_set_text_alignment(infor, GTextAlignmentCenter);
 	text_layer_set_text(infor,
-			"\nDeveloped By: \nJathusan Thiruchelvanathan\n\nContact:\njathusan.t@gmail.com\n\n2014");
+			"\nDeveloped By: \nTreasure Trail\n\nContact:\nischool.berkeley.edu\n\n2015");
 }
 
 void info_unload(Window *window) {
@@ -561,7 +575,7 @@ void window_unload(Window *window) {
 
 void window_mile_load(Window *window) {
 
-	splash = gbitmap_create_with_resource(RESOURCE_ID_THUMBS_UP);
+	splash = gbitmap_create_with_resource(RESOURCE_ID_PEBBLE_COIN);
 	window_set_background_color(window, GColorBlack);
 
 	splash_layer = bitmap_layer_create(GRect(0, 0, 145, 185));
@@ -601,7 +615,7 @@ void window_mile_load(Window *window) {
 
 void window_mile2_load(Window *window) {
 
-	splash = gbitmap_create_with_resource(RESOURCE_ID_PEBBLE_COIN);
+	splash = gbitmap_create_with_resource(RESOURCE_ID_THUMBS_UP);
 	window_set_background_color(window, GColorBlack);
 
 	splash_layer = bitmap_layer_create(GRect(0, 0, 145, 185));
@@ -735,20 +749,30 @@ void update_ui_callback() {
 		snprintf(buf3, sizeof(buf3), "%ld Burned",
 				(long) (tempTotal / STEPS_PER_CALORIE));
 		menu_items[3].subtitle = buf3;
+    
+    static char coin_cnt[] = "1234567890abcdefg";
+		snprintf(coin_cnt, sizeof(coin_cnt), "%ld", coins);
+		menu_items[6].subtitle = coin_cnt;
 
 		layer_mark_dirty(window_get_root_layer(pedometer));
 		layer_mark_dirty(window_get_root_layer(menu_window));
 
 		if (stepGoal > 0 && pedometerCount == stepGoal) {
+      persist_write_int(PEDOMETER_SESSION, pedometerCount);
+      persist_write_int(STEP_GOAL, stepGoal);
+      coins += 1;
 			vibes_long_pulse();
 			window_set_window_handlers(window, (WindowHandlers ) { .load =
 							window_load, .unload = window_unload, });
 			window_stack_push(window, true);
 		} else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && (( ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))) >= stepGoal/10) || currentHourInt == previousStartHourInt)) {
+      persist_write_int(PEDOMETER_SESSION, pedometerCount);
+      persist_write_int(STEP_GOAL, stepGoal);
+      coins += 1;
       vibes_long_pulse();
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In good performance, calculated average %f", ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))));
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In good performance, target average %ld", stepGoal/10);
-			pedometer_upd = window_create();
+			//pedometer_upd = window_create();
 
 	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile_load,
 					.unload = window_mile_unload, });
@@ -756,14 +780,22 @@ void update_ui_callback() {
     }
     
     else if (stepGoal > 0 && pedometerCount < stepGoal && (ceil(stepGoal*.25) == pedometerCount || ceil(stepGoal*.5) == pedometerCount || ceil(stepGoal*.75) == pedometerCount) && ( ceil(pedometerCount/(currentHourInt - (previousStartHourInt))) < stepGoal/10)) {
+      persist_write_int(PEDOMETER_SESSION, pedometerCount);
+      persist_write_int(STEP_GOAL, stepGoal);
+      coins += 1;
       vibes_long_pulse();
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In bad performance %f, calculated average", ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))));
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In bad performance, target average %ld", stepGoal/10);
-			pedometer_upd = window_create();
+      
+			//pedometer_upd = window_create();
 
 	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile2_load,
 					.unload = window_mile2_unload, });
   window_stack_push(pedometer_upd, true);
+    }
+    
+        else if (pedometerCount % 17 == 0) {
+      persist_write_int(PEDOMETER_SESSION, pedometerCount);
     }
 	}
  
@@ -806,6 +838,7 @@ void handle_init(void) {
 	tempTotal = totalSteps = persist_exists(TS) ? persist_read_int(TS) : TSD;
 	isDark = persist_exists(SID) ? persist_read_bool(SID) : true;
   pedometerCount = persist_exists(PEDOMETER_SESSION) ? persist_read_int(PEDOMETER_SESSION) : 1;
+  coins = persist_exists(COIN_COUNT) ? persist_read_int(COIN_COUNT) : 0;
   
   if(persist_exists(STARTHOUR)) { 
     persist_read_string(STARTHOUR, previousStartHour, sizeof(previousStartHour));
@@ -855,10 +888,13 @@ void handle_init(void) {
   previousStartHourInt = atoi (previousStartHour);
   snprintf(str_stepcount, sizeof(str_stepcount), "%lu", pedometerCount);
   snprintf(str_goal, sizeof(str_goal), "%lu", stepGoal);
+  snprintf(str_coin, sizeof(str_coin), "%lu", coins);
   item_sub[0] = str_stepcount;
   item_sub[1] = str_goal;
+  item_sub[6] = str_coin;
 
 	window = window_create();
+  pedometer_upd = window_create();
 	setup_menu_items();
 	setup_menu_sections();
 	setup_menu_window();
@@ -869,11 +905,15 @@ void handle_init(void) {
 }
 
 void handle_deinit(void) {
-	totalSteps += pedometerCount;
+  int old_pedometer_count = persist_exists(PEDOMETER_SESSION) ? persist_read_int(PEDOMETER_SESSION) : 1;
+  int delta = pedometerCount - old_pedometer_count;
+	//totalSteps += pedometerCount;
+  totalSteps += delta;
 	persist_write_int(TS, totalSteps);
   persist_write_bool(SID, isDark);
   persist_write_int(STEP_GOAL, stepGoal);
   persist_write_int(PEDOMETER_SESSION, pedometerCount);
+  persist_write_int(COIN_COUNT, coins);
   persist_write_string(DAYVAL, currentDay);
   persist_write_string(STARTHOUR, previousStartHour);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "totalSteps after leaving is %ld", totalSteps);
