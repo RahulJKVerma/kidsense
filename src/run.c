@@ -40,7 +40,7 @@ char str_goal[10];
 char str_coin[10];
 
 // Menu Item names and subtitles
-char *item_names[8] = { "Start", "Step Goal", "Overall Steps",
+char *item_names[8] = { "Start", "Trail Goal", "Total Treasure Steps",
 		"Overall Calories", "Sensitivity", "Theme", "Coins Collected", "About" };
 char *item_sub[8] = { "Lets Exercise!", "Not Set", "0 in Total", "0 Burned",
 		"", "", "coin$", "Treasure Trail" };
@@ -99,6 +99,7 @@ static char currentHour[5];
 static char previousStartHour[5];
 static int currentHourInt;
 static int previousStartHourInt;
+long dataLog[3];
 
 long stepGoal = 0;
 long pedometerCount = 0;
@@ -120,7 +121,9 @@ char *cal = "Regular Sensitivity";
 // stores total steps since app install
 static long totalSteps = TSD;
 //Dheera : datalogging
-DataLoggingSessionRef my_data_log;
+DataLoggingSessionRef my_data_log_stepcount;
+DataLoggingSessionRef my_data_log_stepgoal;
+DataLoggingSessionRef my_data_log_coins;
 
 /* Added by Rahul for getting current day - start */
 
@@ -130,7 +133,7 @@ void start_callback(int index, void *ctx) {
    APP_LOG(APP_LOG_LEVEL_DEBUG, "In Start_Callback!!");
 	accel_data_service_subscribe(0, NULL);
 
-	menu_items[0].title = "Continue Run";
+	menu_items[0].title = "Continue Trail";
 	menu_items[0].subtitle = "Ready for more?";
 	layer_mark_dirty(simple_menu_layer_get_layer(pedometer_settings));
 
@@ -825,8 +828,12 @@ static void timer_callback(void *data) {
 
 	layer_mark_dirty(window_get_root_layer(pedometer));
 	timer = app_timer_register(ACCEL_STEP_MS, timer_callback, NULL);
-  data_logging_log(my_data_log, &tempTotal, 1);
-
+  dataLog[0] = pedometerCount;
+  dataLog[1] = stepGoal;
+  dataLog[2] = coins;
+  data_logging_log(my_data_log_stepcount, &pedometerCount, 1);
+  data_logging_log(my_data_log_stepgoal, &stepGoal, 1);
+  data_logging_log(my_data_log_coins, &coins, 1);
 }
 
 
@@ -900,7 +907,10 @@ void handle_init(void) {
 	setup_menu_window();
   
 	window_stack_push(menu_window, true);
-  my_data_log = data_logging_create(0x1234, DATA_LOGGING_UINT, 4, true);
+  my_data_log_stepcount = data_logging_create(0x1234, DATA_LOGGING_UINT , 4, true);
+  my_data_log_stepgoal = data_logging_create(0x1234, DATA_LOGGING_UINT , 4, true);
+  my_data_log_coins = data_logging_create(0x1234, DATA_LOGGING_UINT , 4, true);
+  
   
 }
 
@@ -923,5 +933,7 @@ void handle_deinit(void) {
   accel_data_service_unsubscribe();
 	window_destroy(menu_window);
   // When we don't need to log anything else, we can close off the session.
-  data_logging_finish(my_data_log);
+  data_logging_finish(my_data_log_stepcount);
+  data_logging_finish(my_data_log_stepgoal);
+  data_logging_finish(my_data_log_coins);
 }
