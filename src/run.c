@@ -40,7 +40,7 @@ char str_goal[10];
 char str_coin[10];
 
 // Menu Item names and subtitles
-char *item_names[8] = { "Start", "Trail Goal", "Total Treasure Steps",
+char *item_names[8] = { "Start", "Trail Goal", "Total Trail Steps",
 		"Overall Calories", "Sensitivity", "Theme", "Coins Collected", "About" };
 char *item_sub[8] = { "Lets Exercise!", "Not Set", "0 in Total", "0 Burned",
 		"", "", "coin$", "Treasure Trail" };
@@ -908,8 +908,8 @@ void handle_init(void) {
   
 	window_stack_push(menu_window, true);
   my_data_log_stepcount = data_logging_create(0x1234, DATA_LOGGING_UINT , 4, true);
-  my_data_log_stepgoal = data_logging_create(0x1234, DATA_LOGGING_UINT , 4, true);
-  my_data_log_coins = data_logging_create(0x1234, DATA_LOGGING_UINT , 4, true);
+  my_data_log_stepgoal = data_logging_create(0x1235, DATA_LOGGING_UINT , 4, true);
+  my_data_log_coins = data_logging_create(0x1236, DATA_LOGGING_UINT , 4, true);
   
   
 }
