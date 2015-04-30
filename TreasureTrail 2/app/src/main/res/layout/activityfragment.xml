@@ -1,24 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-     <ImageView
-        android:id="@+id/idprofile"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:contentDescription="@string/profile"
-        android:orientation="horizontal"
-        android:src="@drawable/a2" />
-
-
-
-
-</LinearLayout>-->
-
-
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -27,44 +7,35 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:background="@drawable/background_view_rounded_single"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="visible"
         android:id="@+id/linearLayout">
-
-
-
-
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Set Your Daily Goals"
-            android:textColor="#fcfcfc"
+            android:textColor="#000000"
             android:textSize="20sp" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_view_rounded_single"
+        android:background="#ffffff"
         android:orientation="vertical"
         android:visibility="visible"
         android:layout_below="@+id/linearLayout"
         android:layout_alignLeft="@+id/linearLayout"
         android:layout_alignStart="@+id/linearLayout"
-        android:layout_marginTop="120dp">
-
-
-
-
-
+        android:layout_marginTop="120dp"
+        android:id="@+id/linearLayout3">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Set Your Step Count"
-            android:textColor="#fcfcfc"
+            android:textColor="#000000"
             android:textSize="20sp" />
 
         <SeekBar
@@ -77,23 +48,18 @@
             android:progressDrawable="@drawable/progressbar"
             android:secondaryProgress="0" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Set Your Kid's Step Count"
-            android:textColor="#fcfcfc"
-            android:textSize="20sp" />
 
-        <SeekBar
-            android:id="@+id/stepCountKid"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:max="100"
-            android:progress="0"
-            android:progressDrawable="@drawable/progressbar"
-            android:secondaryProgress="0" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Set Goal at: 95000 steps"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:layout_below="@+id/linearLayout3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp" />
 
 </RelativeLayout>
