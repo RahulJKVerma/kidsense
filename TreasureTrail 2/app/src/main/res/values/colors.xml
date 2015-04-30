@@ -6,4 +6,10 @@
     <color name="rounded_container_border">#3b3f44</color>
     <color name="light_gray_header_color">#646663</color>
 
+    <!-- Addedd by dheera for new pedometer code -->
+    <color name="screen_background">#333</color>
+    <color name="display_background">#000</color>
+
 </resources>
+
+

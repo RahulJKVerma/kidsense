@@ -18,6 +18,9 @@
             android:id="@+id/flContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+
+
     </LinearLayout>
 
     <!-- The first child in the layout is for the main Activity UI-->
@@ -32,7 +35,12 @@
         tools:context=".MainActivity$PlaceholderFragment"
         android:id = "@+id/container" >
 
-
+        <Button
+            android:id="@+id/startbutton"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="Start"
+            android:onClick="onBtnClicked"/>
         <TextView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@android:id/text1"
             android:layout_width="match_parent"
@@ -61,6 +69,9 @@
         android:layout_height="wrap_content"/>
 
     <!-- The navigation drawer -->
+
+
+
     <ListView
         android:id="@+id/lvDrawer"
         android:layout_width="240dp"
