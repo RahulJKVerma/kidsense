@@ -166,7 +166,7 @@ public class Pedometer extends Activity {
 		super.onResume();
 		final Handler handler = new Handler();
 		mChildStepCountView = (TextView) findViewById(R.id.log_data_text_view);
-		mChildGoalValueView = (TextView) findViewById(R.id.child_goal);
+		//mChildGoalValueView = (TextView) findViewById(R.id.child_goal);
 		mChildCoinView = (TextView) findViewById(R.id.child_coins);
 		
 		Log.i("DHEERA-", "Inside onResume()");
@@ -226,14 +226,14 @@ public class Pedometer extends Activity {
 		}
 		
 		
-		if(stepGoal==0)
+		/*if(stepGoal==0)
 		{
-			mChildGoalValueView.setText("Goal not set");
+			mChildGoalValueView=100;
 		}
 		else
 		{
-			mChildGoalValueView.setText("Goal - "+stepGoal+" steps");
-		}
+			mChildGoalValueView=100;
+		}*/
 
 	
 		if(coincollected==0)
@@ -277,7 +277,7 @@ public class Pedometer extends Activity {
 //		mDesiredPaceView = (TextView) findViewById(R.id.desired_pace_value);
 		
 		mParentCoinView = (TextView) findViewById(R.id.parent_coins);
-		mParentGoalValueView = (TextView) findViewById(R.id.parent_goal);
+		//mParentGoalValueView = (TextView) findViewById(R.id.parent_goal);
 		
 		
 		mIsMetric = mPedometerSettings.isMetric();
@@ -337,15 +337,15 @@ public class Pedometer extends Activity {
 			mChildStepCountView.setText(childstepcount+" steps");
 		}
 		
-		mChildGoalValueView = (TextView) findViewById(R.id.child_goal);
-		if(stepGoal==0)
+		//mChildGoalValueView = (TextView) findViewById(R.id.child_goal);
+		/*if(stepGoal==0)
 		{
 			mChildGoalValueView.setText("Goal not set");
 		}
 		else
 		{
 			mChildGoalValueView.setText("Goal - "+stepGoal+" steps");
-		}
+		}*/
 
 		mChildCoinView = (TextView) findViewById(R.id.child_coins);
 		if(coincollected==0)
@@ -577,7 +577,7 @@ public class Pedometer extends Activity {
 			case STEPS_MSG:
 				mStepValue = (int) msg.arg1;
 				mStepValueView.setText("" + mStepValue+ " steps");
-				mParentGoalValueView.setText("Goal - "+parentGoalValue+" steps");
+				//mParentGoalValueView.setText("Goal - "+parentGoalValue+" steps");
 				if(mStepValue==parentGoalValue/4)
 				{
 					coinsValue++;

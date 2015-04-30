@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="/Users/ruchitarathi/Downloads/Dheera 04 29/lib/pebblekit-2.6.0-eclipse.jar"/>
-	<classpathentry kind="lib" path="/Users/ruchitarathi/Downloads/Dheera 04 29/lib/guava-18.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ruchitarathi/Documents/TreasureSense Repo/kidsense/Android Pedometer 04 29/lib/guava-18.0.jar"/>
+	<classpathentry kind="lib" path="/Users/ruchitarathi/Documents/TreasureSense Repo/kidsense/Android Pedometer 04 29/lib/pebblekit-2.6.0-eclipse.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

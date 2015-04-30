@@ -161,14 +161,14 @@
                 android:background="@color/display_background" 
                 android:paddingBottom="@dimen/padding"/>
              
-               <TextView android:id="@+id/parent_goal"
+              <!-- <TextView android:id="@+id/parent_goal"
                 android:gravity="center_horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/step_count" 
                  android:textColor="@color/textbody"
                 android:background="@color/display_background" 
-                android:paddingBottom="@dimen/padding"/>
+                android:paddingBottom="@dimen/padding"/>-->
 
         </LinearLayout>
       
@@ -218,7 +218,7 @@
                 android:background="@color/display_background" 
                 android:paddingBottom="@dimen/padding"/>
                
-               <TextView android:id="@+id/child_goal"
+             <!--  <TextView android:id="@+id/child_goal"
                 android:gravity="center_horizontal"
                  android:textColor="@color/textbody"
                 android:layout_width="fill_parent"
@@ -226,7 +226,7 @@
                 android:textSize="@dimen/step_count" 
               
                 android:background="@color/display_background" 
-                android:paddingBottom="@dimen/padding"/>
+                android:paddingBottom="@dimen/padding"/> --> 
                          
         </LinearLayout>
     </LinearLayout>
