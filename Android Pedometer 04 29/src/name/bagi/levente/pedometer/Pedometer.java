@@ -21,6 +21,7 @@ package name.bagi.levente.pedometer;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -36,9 +37,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.getpebble.android.kit.PebbleKit;
+
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -75,9 +79,12 @@ import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+
 import com.getpebble.android.kit.PebbleKit;
+
 import java.util.Calendar;
 import java.util.UUID;
+
 import android.content.Intent;
 import android.content.IntentFilter;
 
@@ -589,6 +596,26 @@ public class Pedometer extends Activity {
 				else if (mStepValue==parentGoalValue*0.75){
 					
 					coinsValue++;
+				}
+				else if (mStepValue==parentGoalValue){
+					coinsValue++;
+					 AlertDialog.Builder alert = new AlertDialog.Builder(Pedometer.this);
+					    alert.setTitle("TreasureTrail in Italy is complete. Celebrate with snapshot!");
+					    // alert.setMessage("Message");
+
+					    alert.setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
+					        public void onClick(DialogInterface dialog, int whichButton) {
+					            //Your action here
+					        }
+					    });
+
+					    alert.setNegativeButton("May Be Later",
+					        new DialogInterface.OnClickListener() {
+					            public void onClick(DialogInterface dialog, int whichButton) {
+					            }
+					        });
+
+					    alert.show();
 				}
 				mParentCoinView.setText("Coins - "+coinsValue);
 				break;
