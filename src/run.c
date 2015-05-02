@@ -41,7 +41,7 @@ char str_coin[10];
 
 // Menu Item names and subtitles
 char *item_names[8] = { "Start", "Trail Goal", "Total Trail Steps",
-		"Overall Calories", "Sensitivity", "Theme", "Coins Collected", "About" };
+		"Overall Calories", "Sensitivity", "Theme", "Coins Collected", "Reset" };
 char *item_sub[8] = { "Lets Exercise!", "Not Set", "0 in Total", "0 Burned",
 		"", "", "coin$", "Treasure Trail" };
 
@@ -148,6 +148,8 @@ void start_callback(int index, void *ctx) {
 }
 
 void info_callback(int index, void *ctx) {
+  coins = 0;
+  pedometerCount  = 0;
 	dev_info = window_create();
 
 	window_set_window_handlers(dev_info, (WindowHandlers ) { .load = info_load,
@@ -348,6 +350,8 @@ void setup_menu_sections() {
 					sizeof(menu_items) / sizeof(menu_items[0]) };
 }
 
+
+
 void setup_menu_window() {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "In setup_menu_window!!");
 	menu_window = window_create();
@@ -519,7 +523,7 @@ void info_load(Window *window) {
 	layer_add_child(window_get_root_layer(dev_info), (Layer*) infor);
 	text_layer_set_text_alignment(infor, GTextAlignmentCenter);
 	text_layer_set_text(infor,
-			"\nDeveloped By: \nTreasure Trail\n\nContact:\nischool.berkeley.edu\n\n2015");
+			"\nCount Reset\nNOTE: \nPLEASE EXIT APP\nAND START AGAIN\n\n2015");
 }
 
 void info_unload(Window *window) {
@@ -618,7 +622,7 @@ void window_mile_load(Window *window) {
 
 void window_mile2_load(Window *window) {
 
-	splash = gbitmap_create_with_resource(RESOURCE_ID_THUMBS_UP);
+	splash = gbitmap_create_with_resource(RESOURCE_ID_PEBBLE_COIN);
 	window_set_background_color(window, GColorBlack);
 
 	splash_layer = bitmap_layer_create(GRect(0, 0, 145, 185));
@@ -775,7 +779,7 @@ void update_ui_callback() {
       vibes_long_pulse();
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In good performance, calculated average %f", ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))));
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In good performance, target average %ld", stepGoal/10);
-			//pedometer_upd = window_create();
+			pedometer_upd = window_create();
 
 	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile_load,
 					.unload = window_mile_unload, });
@@ -790,7 +794,7 @@ void update_ui_callback() {
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In bad performance %f, calculated average", ceil(pedometerCount/(currentHourInt - (previousStartHourInt - .01))));
       APP_LOG(APP_LOG_LEVEL_DEBUG, "In bad performance, target average %ld", stepGoal/10);
       
-			//pedometer_upd = window_create();
+			pedometer_upd = window_create();
 
 	window_set_window_handlers(pedometer_upd, (WindowHandlers ) { .load = window_mile2_load,
 					.unload = window_mile2_unload, });
@@ -871,6 +875,7 @@ void handle_init(void) {
   stepGoal = persist_read_int(STEP_GOAL);
   if (strcmp(currentDay, previousDay) != 0) {
   pedometerCount = 0;
+  coins = 0;
   snprintf(previousStartHour, sizeof(previousStartHour), "%s", currentHour);
 	}
   
@@ -901,7 +906,7 @@ void handle_init(void) {
   item_sub[6] = str_coin;
 
 	window = window_create();
-  pedometer_upd = window_create();
+  //pedometer_upd = window_create();
 	setup_menu_items();
 	setup_menu_sections();
 	setup_menu_window();
