@@ -655,8 +655,8 @@ void window_mile2_load(Window *window) {
 					resource_get_handle(RESOURCE_ID_ROBOTO_LT_15)));
 	layer_add_child(window_get_root_layer(window), (Layer*) hitBack);
 
-	text_layer_set_text(main_message, "Can do Better!");
-	text_layer_set_text(main_message2, "        ");
+	text_layer_set_text(main_message, " Milestone");
+	text_layer_set_text(main_message2, "          Reached!");
 	text_layer_set_text(hitBack, "\n\n\n\n\n\n     << Press Back");
 }
 
