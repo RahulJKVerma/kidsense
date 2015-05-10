@@ -3,11 +3,16 @@
     "capabilities": [
         ""
     ],
-    "companyName": "Jathusan Thiruchelvanathan",
+    "companyName": "CityTrail",
     "longName": "Pedometer for Pebble",
     "projectType": "native",
     "resources": {
         "media": [
+            {
+                "file": "images/black_white.png",
+                "name": "TRAIL",
+                "type": "png"
+            },
             {
                 "file": "images/pebble-coin.png",
                 "name": "PEBBLE_COIN",

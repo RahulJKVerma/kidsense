@@ -158,6 +158,7 @@ void info_callback(int index, void *ctx) {
 	window_stack_push(dev_info, true);
 }
 
+
 void stepGoal_callback(int index, void *ctx) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "In stepGoal_callback!!");
 	set_stepGoal = window_create();
@@ -533,7 +534,7 @@ void info_unload(Window *window) {
 
 void window_load(Window *window) {
 
-	splash = gbitmap_create_with_resource(RESOURCE_ID_SPLASH);
+	splash = gbitmap_create_with_resource(RESOURCE_ID_TRAIL);
 	window_set_background_color(window, GColorBlack);
 
 	splash_layer = bitmap_layer_create(GRect(0, 0, 145, 185));
@@ -566,9 +567,9 @@ void window_load(Window *window) {
 					resource_get_handle(RESOURCE_ID_ROBOTO_LT_15)));
 	layer_add_child(window_get_root_layer(window), (Layer*) hitBack);
 
-	text_layer_set_text(main_message, "      Goal");
-	text_layer_set_text(main_message2, "          Reached!");
-	text_layer_set_text(hitBack, "\n\n\n\n\n\n     << Press Back");
+  text_layer_set_text(main_message, "      Trail");
+  text_layer_set_text(main_message2,"        Completed!");
+  text_layer_set_text(hitBack, "\n\n\n\n\n\n     << Press Back");
 }
 
 void window_unload(Window *window) {
@@ -616,7 +617,7 @@ void window_mile_load(Window *window) {
 	layer_add_child(window_get_root_layer(window), (Layer*) hitBack);
 
 	text_layer_set_text(main_message, " Milestone");
-	text_layer_set_text(main_message2, "          Reached!");
+	text_layer_set_text(main_message2,"          Reached!");
 	text_layer_set_text(hitBack, "\n\n\n\n\n\n     << Press Back");
 }
 
@@ -921,9 +922,10 @@ void handle_init(void) {
 
 void handle_deinit(void) {
   int old_pedometer_count = persist_exists(PEDOMETER_SESSION) ? persist_read_int(PEDOMETER_SESSION) : 1;
-  int delta = pedometerCount - old_pedometer_count;
+  int delta = abs(pedometerCount - old_pedometer_count);
 	//totalSteps += pedometerCount;
   totalSteps += delta;
+  //totalSteps = totalSteps * -1;
 	persist_write_int(TS, totalSteps);
   persist_write_bool(SID, isDark);
   persist_write_int(STEP_GOAL, stepGoal);
